@@ -87,7 +87,7 @@ void generate_random_nodes(int random_selected_nodes[10],int start, int end){
 
 	//print the random nodes
 	for(int i = 0; i<10; i++){
-		cout<<random_selected_nodes[i]<<" ";
+		cout<<random_selected_nodes[i]<<"-";
 	}
 }
 
@@ -110,16 +110,48 @@ void Read_EU_Email(string filename,int random_selected_nodes[10]){
 			if(node_from==node_to){
 				weight = 0; //condition for node to itself cost (0)
 			}
+			
+
+			//just picking the the nodes from the file according to the randomly generated nodes
+			bool is_valid_from = false;
+			bool is_valid_to = false;
+			for (int i =0 ;i<10 ;i++){
+				if(random_selected_nodes[i]==node_from){
+					is_valid_from = true;
+					break;
+				}
+				else{
+					is_valid_from = false;
+				}
+			}
+			
+			for (int i =0 ;i<10 ;i++){
+				if(random_selected_nodes[i]==node_to){
+					is_valid_to = true;
+					break;
+				}
+				else{
+					is_valid_to = false;
+				}
+			}
+
+			if(is_valid_to && is_valid_from){
 			//storing the edges in the array
 			edges[M][0] = node_from;
 			edges[M][1] = node_to;
 			edges[M][2] = weight;
-            cout << node_from << "  " << node_to <<"  "<<weight<< endl;
+			M++;
+			}
 			
         } 
     }
 
     file.close(); 
+}
+void print_edges(){
+	for(int i = 0; i<M; i++){
+		cout<<edges[i][0]<<"-"<<edges[i][1]<<"-"<<edges[i][2]<<endl;
+	}
 }
 
 // Driver Code
@@ -143,7 +175,7 @@ int main()
 			{ 2, 4, 6 }, { 3, 2, 8 }, { 3, 4, 1 } };
 
 	// Function Call
-	findKShortest(edges, N, M, K);
+	//findKShortest(edges, N, M, K);
 
 	return 0;
 }
