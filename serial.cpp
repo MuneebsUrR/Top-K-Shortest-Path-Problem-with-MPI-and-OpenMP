@@ -1,5 +1,11 @@
 // C++ implementation of above approach
 #include <bits/stdc++.h>
+#include<string>
+#include <iostream>
+#include<ctime>
+#include<fstream>
+#include <vector>
+#include<cstdlib>
 using namespace std;
 
 // Function to find K shortest path lengths
@@ -58,6 +64,10 @@ void findKShortest(int edges[][3], int n, int m, int k)
 	for (int i = 0; i < k; i++) {
 		cout << dis[n][i] << " ";
 	}
+}
+
+void Read_EU_Email(string filename){
+
 }
 
 // Driver Code
