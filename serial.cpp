@@ -8,14 +8,13 @@
 #include <queue>
 #include <sstream>
 #include <algorithm> 
-
 #include <unordered_set>
 using namespace std;
 
-const int MAX_ROWS = 100000;
+const int MAX_ROWS = 10000000;
 const int MAX_COLS = 3;
 int edges[MAX_ROWS][MAX_COLS] = {0};
-
+int edges_count_index = 0 ;
 // Function to find K shortest path lengths
 void findKShortest(int edges[][3], int n, int m, int k)
 {
@@ -29,7 +28,7 @@ void findKShortest(int edges[][3], int n, int m, int k)
     }
 
     // Vector to store distances
-    vector< vector<int> > dis(n + 1, vector<int>(k, 1e9));
+    vector< vector<int> > dis(n + 1, vector<int>(k, 1000000));
 
     // Initialization of priority queue
     priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
@@ -69,6 +68,7 @@ void findKShortest(int edges[][3], int n, int m, int k)
         }
     }
 
+	
     // Printing K shortest paths
     for (int i = 0; i < k; i++)
     {
@@ -80,7 +80,7 @@ void generate_random_pairs(int random_selected_pairs[10][3]){
 	srand(time(0));
     //selecting 10 random pairs from the edges matrix 
 	for (int i =0 ;i<10;i++){
-	    int random_pair = rand() % MAX_ROWS;
+	    int random_pair = rand() % edges_count_index;
 		random_selected_pairs[i][0] = edges[random_pair][0];
 		random_selected_pairs[i][1] = edges[random_pair][1];
 		random_selected_pairs[i][2] = edges[random_pair][2];
@@ -88,6 +88,7 @@ void generate_random_pairs(int random_selected_pairs[10][3]){
 	
 	
 }
+
 
 void print_pairs(int random_selected_pairs[10][3]){
 	//printing random pairs
@@ -116,7 +117,7 @@ void Read_EU_Email(string filename)
                 cerr << "Parsing error" << endl;
                 break;
             }
-            int weight = rand() % 10 + 1; // generate a random weight between 1 and 10
+            int weight = 1; // generate a random weight between 1 and 10
 
             if (node_from == node_to)
             {
@@ -128,23 +129,25 @@ void Read_EU_Email(string filename)
             edges[M][1] = node_to;
             edges[M][2] = weight;
             M++;
+			edges_count_index++;
         }
     }
 
     file.close();
 }
 
-int count_numberof_nodes(int random_selected_pairs[10][3]) {
+int count_numberof_nodes() {
     std::unordered_set<int> uniqueElements;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < edges_count_index; ++i) {
         for (int j = 0; j < 2; ++j) {
-            uniqueElements.insert(random_selected_pairs[i][j]);
+            uniqueElements.insert(edges[i][j]);
         }
     }
 
     return uniqueElements.size();
 }
+
 
 // Driver Code
 int main()
@@ -161,10 +164,23 @@ int main()
     Read_EU_Email("euemail.txt");
     generate_random_pairs(random_selected_pairs);
 	print_pairs(random_selected_pairs);
-	int N = count_numberof_nodes(random_selected_pairs);
-	cout<<"Nodes = "<<N<<endl;
+	int N = count_numberof_nodes();
+	cout<<"Nodes = "<<N<<"  "<<edges_count_index<<endl;
+
+	int random_selected_pairs2[10][3] = {
+    {1, 2, 3},
+    {2, 3, 4},
+    {3, 4, 5},
+    {4, 5, 6},
+    {5, 6, 7},
+    {6, 7, 8},
+    {7, 8, 9},
+    {8, 9, 10},
+    {9, 10, 1},
+    {10, 1, 2}
+};
     // Function Call
-    // findKShortest(edges, N, M, K);
+     findKShortest(random_selected_pairs, N, 10, K);
 
     return 0;
 }
