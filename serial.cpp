@@ -70,28 +70,29 @@ void findKShortest(int edges[][3], int n, int m, int k)
 	}
 }
 
-void generate_random_nodes(int random_selected_nodes[10],int start, int end){
-	srand(time(0));
-	random_selected_nodes[0] = start;
-	for(int i = 1; i<10; i++){
-		random_selected_nodes[i] = rand() % (end - start + 1) + start;
+// void generate_random_nodes(int random_selected_nodes[10],int start, int end){
+// 	srand(time(0));
+// 	random_selected_nodes[0] = start;
+// 	for(int i = 1; i<10; i++){
+// 		random_selected_nodes[i] = rand() % (end - start + 1) + start;
 
-		while(random_selected_nodes[i] == random_selected_nodes[i-1]){
-			random_selected_nodes[i] = rand() % (end - start + 1) + start;
-		}
+// 		while(random_selected_nodes[i] == random_selected_nodes[i-1]){
+// 			random_selected_nodes[i] = rand() % (end - start + 1) + start;
+// 		}
 
-	}
+// 	}
 
-	// sort the array
-    std::sort(random_selected_nodes, random_selected_nodes + 10);
+// 	// sort the array
+//     std::sort(random_selected_nodes, random_selected_nodes + 10);
 
-	//print the random nodes
-	for(int i = 0; i<10; i++){
-		cout<<random_selected_nodes[i]<<"-";
-	}
-}
+// 	//print the random nodes
+// 	for(int i = 0; i<10; i++){
+// 		cout<<random_selected_nodes[i]<<" ";
+// 	}
+// 	cout<<endl;
+// }
 
-void Read_EU_Email(string filename,int random_selected_nodes[10]){
+void Read_EU_Email(string filename){
     ifstream file(filename); // open the file
 
     if (file.is_open()) {
@@ -111,37 +112,13 @@ void Read_EU_Email(string filename,int random_selected_nodes[10]){
 				weight = 0; //condition for node to itself cost (0)
 			}
 			
-
-			//just picking the the nodes from the file according to the randomly generated nodes
-			bool is_valid_from = false;
-			bool is_valid_to = false;
-			for (int i =0 ;i<10 ;i++){
-				if(random_selected_nodes[i]==node_from){
-					is_valid_from = true;
-					break;
-				}
-				else{
-					is_valid_from = false;
-				}
-			}
-			
-			for (int i =0 ;i<10 ;i++){
-				if(random_selected_nodes[i]==node_to){
-					is_valid_to = true;
-					break;
-				}
-				else{
-					is_valid_to = false;
-				}
-			}
-
-			if(is_valid_to && is_valid_from){
 			//storing the edges in the array
 			edges[M][0] = node_from;
 			edges[M][1] = node_to;
 			edges[M][2] = weight;
 			M++;
-			}
+
+			
 			
         } 
     }
@@ -159,21 +136,18 @@ int main()
 {
 
 	// Given Input
-	int N = 4, M = 6, K = 3;
+	int N = 4, K = 3;
 
 	//start and end node to pick random 10 nodes between them
 	int start_node = 0;
-	int end_node = 30;
-	int random_selected_nodes[10]; //array to store the random nodes
-	generate_random_nodes(random_selected_nodes,start_node, end_node);
-
+	int end_node = 30000;
+	int random_selected_pairs[10][3]; //array to store the random nodes
+	
 	//reading data from the file
-	Read_EU_Email("euemail.txt",random_selected_nodes);
-
-	int edges[][3]
-		= { { 1, 2, 1 }, { 1, 3, 3 }, { 2, 3, 2 },
-			{ 2, 4, 6 }, { 3, 2, 8 }, { 3, 4, 1 } };
-
+	Read_EU_Email("euemail.txt");
+	print_edges();
+	
+	
 	// Function Call
 	//findKShortest(edges, N, M, K);
 
