@@ -8,26 +8,21 @@
 #include <queue>
 #include <sstream>
 #include <algorithm> 
-#include <omp.h>
-#include <mpi.h>
-
 #include <unordered_set>
+// #include <omp.h>
+// #include <mpi.h>
+
 using namespace std;
 
-const int MAX_ROWS = 10000000;
-const int MAX_COLS = 3;
-int edges[MAX_ROWS][MAX_COLS] = {0};
-int edges_count_index = 0 ;
 // Function to find K shortest path lengths
-void findKShortest(int edges[][3], int n, int m, int k)
+void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
 {
-
-    // Initialize graph
-    vector< vector<pair<int, int> > > g(n + 1);
-    for (int i = 0; i < m; i++)
-    {
-        // Storing edges
-        g[edges[i][0]].push_back(make_pair(edges[i][1], edges[i][2]));
+for (int i = 1; i < 2; ++i) {
+        cout << "Node " << i << " is connected to: ";
+        for (const auto& edge : g[i]) {
+            cout << "(" << edge.first << ", " << edge.second << ") ";
+        }
+        cout << endl;
     }
 
     // Vector to store distances
@@ -79,120 +74,118 @@ void findKShortest(int edges[][3], int n, int m, int k)
     }
 }
 
-void generate_random_pairs(int random_selected_pairs[10][3]){
+void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int noOfNodes) {
 	srand(time(0));
-    //selecting 10 random pairs from the edges matrix 
-	for (int i =0 ;i<10;i++){
-	    int random_pair = rand() % edges_count_index;
-		random_selected_pairs[i][0] = edges[random_pair][0];
-		random_selected_pairs[i][1] = edges[random_pair][1];
-		random_selected_pairs[i][2] = edges[random_pair][2];
+
+	for (int i = 0; i < noOfPairs; i++) {
+	    int randomNumber1 = rand() % noOfNodes;
+	    int randomNumber2 = rand() % noOfNodes;
+		random_selected_pairs[i][0] = randomNumber1;
+		random_selected_pairs[i][1] = randomNumber2;
 	}
-	
-	
 }
 
 
-void print_pairs(int random_selected_pairs[10][3]){
+void print_pairs(int random_selected_pairs[][2]){
 	//printing random pairs
 	for(int i =0 ;i<10;i++){
-		cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<"-"<<random_selected_pairs[i][2]<<endl;
+		cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<endl;
 	}
 	cout<<endl;
 }
 
 
-
-void Read_EU_Email(string filename)
-{
+int countUniqueNodes(const string& filename) {
     ifstream file(filename); // open the file
-    int M = 0;
-    if (file.is_open())
-    {
-        srand(time(0));
+    unordered_set<int> uniqueNodes;
+
+    if (file.is_open()) {
         string line;
-        while (getline(file, line) && M < MAX_ROWS)
-        {
+        while (getline(file, line)) {
             istringstream iss(line);
             int node_from, node_to;
-            if (!(iss >> node_from >> node_to))
-            {
+            if (iss >> node_from >> node_to) {
+                uniqueNodes.insert(node_from);
+                uniqueNodes.insert(node_to);
+            } else {
                 cerr << "Parsing error" << endl;
                 break;
             }
-            int weight = 1; // generate a random weight between 1 and 10
+        }
+    }
 
-            if (node_from == node_to)
-            {
-                weight = 0; // condition for node to itself cost (0)
+    file.close();
+
+    return uniqueNodes.size();
+}
+
+void completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string& filename) {
+    ifstream file(filename); // open the file
+
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            istringstream iss(line);
+            int node_from, node_to;
+            if (iss >> node_from >> node_to) {
+                // cout << "Node from: " << node_from << " Node to: " << node_to << endl;
+                if (node_from == node_to) {
+                    continue;
+                }
+                edges[node_from].push_back(make_pair(node_to, 1)); // Assuming default weight is 1
+            } else {
+                cerr << "Parsing error" << endl;
+                break;
             }
-
-            // storing the edges in the array
-            edges[M][0] = node_from;
-            edges[M][1] = node_to;
-            edges[M][2] = weight;
-            M++;
-			edges_count_index++;
         }
     }
 
     file.close();
 }
 
-int count_numberof_nodes() {
-    std::unordered_set<int> uniqueElements;
-
-    for (int i = 0; i < edges_count_index; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            uniqueElements.insert(edges[i][j]);
-        }
-    }
-
-    return uniqueElements.size();
-}
-
 int main(int argc, char** argv) {
+    string filename = "euemail.txt";
+    int uniqueNodeCount = countUniqueNodes(filename);
+    vector<vector<pair<int, int> > > edges(uniqueNodeCount + 1);
+    completeEdgesVector(edges, filename);
+
     // MPI Initialization
-    MPI_Init(&argc, &argv);
+    // MPI_Init(&argc, &argv);
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    // int rank, size;
+    // MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    // MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // Given Input
-    int K = 3;
-    int M = 10;
-
-    int random_selected_pairs[10][3]; // array to store the random nodes
-
-    if (rank == 0) {
-        // reading data from the file
-        Read_EU_Email("euemail.txt");
-
+    const int K = 3;
+    const int noOfPairs = 10;
+    int random_selected_pairs[noOfPairs][2];
+    
+    // if (rank == 0) {
+        
         // Generate random pairs only in the root process
-        generate_random_pairs(random_selected_pairs);
+        generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
         print_pairs(random_selected_pairs);
-        int N = count_numberof_nodes();
-        cout << "Nodes = " << N << endl;
-        // Function Call
-        // findKShortest(edges, N, M, K);
-    }
+    
+        cout << "Nodes = " << uniqueNodeCount << endl;
 
-    // Scatter the random_selected_pairs array
-    int rows_per_process = 2;
-    MPI_Scatter(random_selected_pairs, rows_per_process * 3, MPI_INT, random_selected_pairs, rows_per_process * 3, MPI_INT, 0, MPI_COMM_WORLD);
+        findKShortest(edges, uniqueNodeCount, edges.size(), K);
+    // }
 
-    // Process local computation on assigned rows and print them
-    for (int i = 0; i < rows_per_process; ++i) {
-        cout << "Process " << rank << ": Row " << i << ": ";
-        for (int j = 0; j < 3; ++j) {
-            cout << random_selected_pairs[i][j] << " ";
-        }
-        cout << endl;
-    }
+    // // Scatter the random_selected_pairs array
+    // int rows_per_process = 2;
+    // MPI_Scatter(random_selected_pairs, rows_per_process * 3, MPI_INT, random_selected_pairs, rows_per_process * 3, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // // Process local computation on assigned rows and print them
+    // for (int i = 0; i < rows_per_process; ++i) {
+    //     cout << "Process " << rank << ": Row " << i << ": ";
+    //     for (int j = 0; j < 3; ++j) {
+    //         cout << random_selected_pairs[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
 
     // MPI Finalization
-    MPI_Finalize();
+    // MPI_Finalize();
 
     return 0;
 }

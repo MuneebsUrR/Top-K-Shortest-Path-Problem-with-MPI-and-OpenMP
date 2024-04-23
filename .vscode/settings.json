@@ -5,6 +5,8 @@
         "random": "cpp",
         "vector": "cpp",
         "unordered_set": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "fstream": "cpp",
+        "iostream": "cpp"
     }
 }
