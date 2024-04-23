@@ -81,5 +81,63 @@ int main()
 	// Function Call
 	findKShortest(edges, N, M, K);
 
-	return 0;
+    file.close();
+}
+
+int count_numberof_nodes() {
+    std::unordered_set<int> uniqueElements;
+
+    for (int i = 0; i < edges_count_index; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            uniqueElements.insert(edges[i][j]);
+        }
+    }
+
+    return uniqueElements.size();
+}
+
+int main(int argc, char** argv) {
+    // MPI Initialization
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    // Given Input
+    int K = 3;
+    int M = 10;
+
+    int random_selected_pairs[10][3]; // array to store the random nodes
+
+    if (rank == 0) {
+        // reading data from the file
+        Read_EU_Email("euemail.txt");
+
+        // Generate random pairs only in the root process
+        generate_random_pairs(random_selected_pairs);
+        print_pairs(random_selected_pairs);
+        int N = count_numberof_nodes();
+        cout << "Nodes = " << N << endl;
+        // Function Call
+        // findKShortest(edges, N, M, K);
+    }
+
+    // Scatter the random_selected_pairs array
+    int rows_per_process = 2;
+    MPI_Scatter(random_selected_pairs, rows_per_process * 3, MPI_INT, random_selected_pairs, rows_per_process * 3, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Process local computation on assigned rows and print them
+    for (int i = 0; i < rows_per_process; ++i) {
+        cout << "Process " << rank << ": Row " << i << ": ";
+        for (int j = 0; j < 3; ++j) {
+            cout << random_selected_pairs[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    // MPI Finalization
+    MPI_Finalize();
+
+    return 0;
 }
