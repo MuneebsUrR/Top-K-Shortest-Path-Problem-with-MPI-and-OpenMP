@@ -80,6 +80,10 @@ void generate_random_pairs(int random_selected_pairs[10][3]){
 		random_selected_pairs[i][2] = edges[random_pair][2];
 	}
 	
+	
+}
+
+void print_pairs(int random_selected_pairs[10][3]){
 	//printing random pairs
 	for(int i =0 ;i<10;i++){
 		cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<"-"<<random_selected_pairs[i][2]<<endl;
@@ -119,13 +123,24 @@ void Read_EU_Email(string filename){
     file.close(); 
 }
 
+int countUniqueElements(int random_selected_pairs[10][3]) {
+    std::unordered_set<int> uniqueElements;
+
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            uniqueElements.insert(random_selected_pairs[i][j]);
+        }
+    }
+
+    return uniqueElements.size();
+}
 
 // Driver Code
 int main()
 {
 
 	// Given Input
-	int N = 10, K = 3;
+	int K = 3;
 	int M = 10;
 	
 	int random_selected_pairs[10][3]; //array to store the random nodes
@@ -133,8 +148,9 @@ int main()
 	//reading data from the file
 	Read_EU_Email("euemail.txt");
 	generate_random_pairs(random_selected_pairs);
-	
-	
+	print_pairs(random_selected_pairs);
+	int N = countUniqueElements(random_selected_pairs);
+	cout<<"N = "<<N<<endl;
 	// Function Call
 	//findKShortest(edges, N, M, K);
 
