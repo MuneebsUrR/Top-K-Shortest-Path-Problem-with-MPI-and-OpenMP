@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <queue>
 #include <sstream>
-#include <algorithm> 
+#include <algorithm>
 #include <unordered_set>
 // #include <omp.h>
 // #include <mpi.h>
@@ -17,13 +17,16 @@ using namespace std;
 // Function to find K shortest path lengths
 void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
 {
-for (int i = 1; i < 2; ++i) {
-        cout << "Node " << i << " is connected to: ";
-        for (const auto& edge : g[i]) {
-            cout << "(" << edge.first << ", " << edge.second << ") ";
+    //print g
+    for(int i = 0; i < g.size(); i++){
+        cout << i << ": ";
+        for(int j = 0; j < g[i].size(); j++){
+            cout << g[i][j].first << " " << g[i][j].second << " | ";
         }
         cout << endl;
     }
+
+    cout << "completed" << endl;
 
     // Vector to store distances
     vector< vector<int> > dis(n + 1, vector<int>(k, 1000000));
@@ -36,6 +39,7 @@ for (int i = 1; i < 2; ++i) {
     // while pq has elements
     while (!pq.empty())
     {
+        cout << dis.size() << endl;
         // Storing the node value
         int u = pq.top().second;
 
@@ -66,7 +70,7 @@ for (int i = 1; i < 2; ++i) {
         }
     }
 
-	
+
     // Printing K shortest paths
     for (int i = 0; i < k; i++)
     {
@@ -98,6 +102,7 @@ void print_pairs(int random_selected_pairs[][2]){
 int countUniqueNodes(const string& filename) {
     ifstream file(filename); // open the file
     unordered_set<int> uniqueNodes;
+    int maxNode = 0; // Initialize maxNode to 0
 
     if (file.is_open()) {
         string line;
@@ -105,8 +110,12 @@ int countUniqueNodes(const string& filename) {
             istringstream iss(line);
             int node_from, node_to;
             if (iss >> node_from >> node_to) {
+                if (node_from == node_to) {
+                    continue;
+                }
                 uniqueNodes.insert(node_from);
                 uniqueNodes.insert(node_to);
+                maxNode = max(maxNode, max(node_from, node_to)); // Update maxNode
             } else {
                 cerr << "Parsing error" << endl;
                 break;
@@ -116,12 +125,12 @@ int countUniqueNodes(const string& filename) {
 
     file.close();
 
-    return uniqueNodes.size();
+    return maxNode;
 }
 
-void completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string& filename) {
+int completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string& filename) {
+    int count = 0;
     ifstream file(filename); // open the file
-
     if (file.is_open()) {
         string line;
         while (getline(file, line)) {
@@ -133,6 +142,7 @@ void completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string&
                     continue;
                 }
                 edges[node_from].push_back(make_pair(node_to, 1)); // Assuming default weight is 1
+                count++;
             } else {
                 cerr << "Parsing error" << endl;
                 break;
@@ -141,13 +151,14 @@ void completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string&
     }
 
     file.close();
+    return count;
 }
 
 int main(int argc, char** argv) {
     string filename = "euemail.txt";
     int uniqueNodeCount = countUniqueNodes(filename);
     vector<vector<pair<int, int> > > edges(uniqueNodeCount + 1);
-    completeEdgesVector(edges, filename);
+    int noOfEdges = completeEdgesVector(edges, filename);
 
     // MPI Initialization
     // MPI_Init(&argc, &argv);
@@ -159,16 +170,20 @@ int main(int argc, char** argv) {
     const int K = 3;
     const int noOfPairs = 10;
     int random_selected_pairs[noOfPairs][2];
-    
+
     // if (rank == 0) {
-        
+
         // Generate random pairs only in the root process
         generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
         print_pairs(random_selected_pairs);
-    
+
         cout << "Nodes = " << uniqueNodeCount << endl;
 
-        findKShortest(edges, uniqueNodeCount, edges.size(), K);
+        cout << "uniqueNodeCount = " << uniqueNodeCount << endl;
+        cout << "edges.size() = " << edges.size() << endl;
+        cout << "K = " << K << endl;
+
+        findKShortest(edges, uniqueNodeCount, noOfEdges, K);
     // }
 
     // // Scatter the random_selected_pairs array
