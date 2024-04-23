@@ -1,5 +1,16 @@
-// C++ implementation of above approach
-#include <bits/stdc++.h>
+#include <string>
+#include <iostream>
+#include <ctime>
+#include <fstream>
+#include <vector>
+#include <cstdlib>
+#include <queue>
+#include <sstream>
+#include <algorithm> 
+#include <omp.h>
+#include <mpi.h>
+
+#include <unordered_set>
 using namespace std;
 
 // Function to find K shortest path lengths
@@ -116,11 +127,9 @@ int main(int argc, char** argv) {
 
         // Generate random pairs only in the root process
         generate_random_pairs(random_selected_pairs);
-        print_pairs(random_selected_pairs);
-        int N = count_numberof_nodes();
-        cout << "Nodes = " << N << endl;
+      
         // Function Call
-        // findKShortest(edges, N, M, K);
+        findKShortest(edges, N, M, K);
     }
 
     // Scatter the random_selected_pairs array
