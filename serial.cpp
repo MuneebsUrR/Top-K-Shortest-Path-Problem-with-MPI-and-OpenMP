@@ -10,6 +10,7 @@ using namespace std;
 const int MAX_ROWS = 100000;
 const int MAX_COLS = 3;
 int edges[MAX_ROWS][MAX_COLS]{0};
+int M = 0;
 
 // Function to find K shortest path lengths
 void findKShortest(int edges[][3], int n, int m, int k)
@@ -78,7 +79,7 @@ void generate_random_nodes(int random_selected_nodes[10],int start, int end){
 		while(random_selected_nodes[i] == random_selected_nodes[i-1]){
 			random_selected_nodes[i] = rand() % (end - start + 1) + start;
 		}
-		
+
 	}
 
 	// sort the array
@@ -90,8 +91,35 @@ void generate_random_nodes(int random_selected_nodes[10],int start, int end){
 	}
 }
 
-void Read_EU_Email(string filename){
+void Read_EU_Email(string filename,int random_selected_nodes[10]){
+    ifstream file(filename); // open the file
 
+    if (file.is_open()) {
+		srand(time(0));
+        string line;
+        while (getline(file, line)) {
+            istringstream iss(line);
+            int node_from, node_to;
+            if (!(iss >> node_from >> node_to)) {
+                cerr << "Parsing error" << endl;
+                break;
+            }
+			int weight = rand() % 10 + 1; // generate a random weight between 1 and 10
+
+           
+			if(node_from==node_to){
+				weight = 0; //condition for node to itself cost (0)
+			}
+			//storing the edges in the array
+			edges[M][0] = node_from;
+			edges[M][1] = node_to;
+			edges[M][2] = weight;
+            cout << node_from << "  " << node_to <<"  "<<weight<< endl;
+			
+        } 
+    }
+
+    file.close(); 
 }
 
 // Driver Code
@@ -106,6 +134,9 @@ int main()
 	int end_node = 30;
 	int random_selected_nodes[10]; //array to store the random nodes
 	generate_random_nodes(random_selected_nodes,start_node, end_node);
+
+	//reading data from the file
+	Read_EU_Email("euemail.txt",random_selected_nodes);
 
 	int edges[][3]
 		= { { 1, 2, 1 }, { 1, 3, 3 }, { 2, 3, 2 },
