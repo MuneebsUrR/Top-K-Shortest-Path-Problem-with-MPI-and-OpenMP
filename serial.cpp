@@ -7,6 +7,9 @@
 #include <vector>
 #include<cstdlib>
 using namespace std;
+const int MAX_ROWS = 100000;
+const int MAX_COLS = 3;
+int edges[MAX_ROWS][MAX_COLS]{0};
 
 // Function to find K shortest path lengths
 void findKShortest(int edges[][3], int n, int m, int k)
@@ -66,6 +69,27 @@ void findKShortest(int edges[][3], int n, int m, int k)
 	}
 }
 
+void generate_random_nodes(int random_selected_nodes[10],int start, int end){
+	srand(time(0));
+	random_selected_nodes[0] = start;
+	for(int i = 1; i<10; i++){
+		random_selected_nodes[i] = rand() % (end - start + 1) + start;
+
+		while(random_selected_nodes[i] == random_selected_nodes[i-1]){
+			random_selected_nodes[i] = rand() % (end - start + 1) + start;
+		}
+		
+	}
+
+	// sort the array
+    std::sort(random_selected_nodes, random_selected_nodes + 10);
+
+	//print the random nodes
+	for(int i = 0; i<10; i++){
+		cout<<random_selected_nodes[i]<<" ";
+	}
+}
+
 void Read_EU_Email(string filename){
 
 }
@@ -76,6 +100,13 @@ int main()
 
 	// Given Input
 	int N = 4, M = 6, K = 3;
+
+	//start and end node to pick random 10 nodes between them
+	int start_node = 0;
+	int end_node = 30;
+	int random_selected_nodes[10]; //array to store the random nodes
+	generate_random_nodes(random_selected_nodes,start_node, end_node);
+
 	int edges[][3]
 		= { { 1, 2, 1 }, { 1, 3, 3 }, { 2, 3, 2 },
 			{ 2, 4, 6 }, { 3, 2, 8 }, { 3, 4, 1 } };
