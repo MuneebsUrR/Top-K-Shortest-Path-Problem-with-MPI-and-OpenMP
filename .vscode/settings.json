@@ -1,6 +1,8 @@
 {
     "files.associations": {
+        "*.js": "javascriptreact",
         "iosfwd": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "vector": "cpp"
     }
 }
