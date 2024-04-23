@@ -8,34 +8,35 @@
 #include <sstream>
 #include <algorithm>
 #include <unordered_set>
-// #include <omp.h>
-// #include <mpi.h>
+#include <omp.h>
+#include <mpi.h>
 
 using namespace std;
 
 // Function to find K shortest path lengths
-void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
+void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k, int src)
 {
     //print g
     for(int i = 0; i < g.size(); i++){
-        cout << i << ": ";
+        // cout << i << ": ";
         for(int j = 0; j < g[i].size(); j++){
-            cout << g[i][j].first << " " << g[i][j].second << " | ";
+            // cout << g[i][j].first << " " << g[i][j].second << " | ";
         }
-        cout << endl;
+        // cout << endl;
     }
 
-    cout << "completed" << endl;
+    // cout << "completed" << endl;
 
     // Vector to store distances
     vector< vector<int> > dis(n + 1, vector<int>(k, 1000000));
 
     // Initialization of priority queue
     priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
-    pq.push(make_pair(0, 1));
-    dis[1][0] = 0;
+    pq.push(make_pair(0, src));
+    dis[src][0] = 0;
 
     // while pq has elements
+    
     while (!pq.empty())
     {
         cout << dis.size() << endl;
@@ -50,6 +51,7 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
         vector<pair<int, int> > v = g[u];
 
         // Traversing the adjacency list
+        #pragma omp parallel for
         for (int i = 0; i < v.size(); i++)
         {
             int dest = v[i].first;
@@ -71,10 +73,10 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
 
 
     // Printing K shortest paths
-    for (int i = 0; i < k; i++)
-    {
-        cout << dis[n][i] << " ";
-    }
+    // for (int i = 0; i < k; i++)
+    // {
+    //     cout << dis[n][i] << " ";
+    // }
 }
 
 void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int noOfNodes) {
@@ -160,28 +162,55 @@ int main(int argc, char** argv) {
     clock_t start, end;
     double cpu_time_used;
 
+    // MPI Initialization
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     const int K = 3;
     const int noOfPairs = 10;
     int random_selected_pairs[noOfPairs][2];
 
-    
-    // Generate random pairs only in the root process
-    generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
-    print_pairs(random_selected_pairs);
+    if (rank == 0) {
 
-    cout << "Nodes = " << uniqueNodeCount << endl;
+        // Generate random pairs only in the root process
+        generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
+        print_pairs(random_selected_pairs);
 
-    cout << "uniqueNodeCount = " << uniqueNodeCount << endl;
-    cout << "edges.size() = " << edges.size() << endl;
-    cout << "K = " << K << endl;
+        // cout << "Nodes = " << uniqueNodeCount << endl;
 
+        // cout << "uniqueNodeCount = " << uniqueNodeCount << endl;
+        // cout << "edges.size() = " << edges.size() << endl;
+        // cout << "K = " << K << endl;
+
+        
+    }
+
+    // Scatter the random_selected_pairs array
+    int rows_per_process = 2;
+    int received_pairs[rows_per_process][2]; // buffer to receive scattered pairs
+
+    MPI_Scatter(random_selected_pairs, rows_per_process * 2, MPI_INT, received_pairs, rows_per_process * 2, MPI_INT, 0, MPI_COMM_WORLD);
+
+
+    // Process local computation on assigned rows and print them
     start = clock();
-    findKShortest(edges, uniqueNodeCount, noOfEdges, K);
+    for (int i = 0; i < rows_per_process; ++i) {
+        // cout << "Process " << rank << ": Row " << i << ": ";
+        
+        findKShortest(edges, uniqueNodeCount, noOfEdges, K, received_pairs[i][0] );
+            // cout << random_selected_pairs[i][j] << " ";
+        
+        // cout << endl;
+    }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Time taken for serial: %f seconds\n", cpu_time_used);
-    
+    printf("Time taken for parallel: %f seconds\n", cpu_time_used);
+
+    // MPI Finalization
+    MPI_Finalize();
 
     return 0;
 }
