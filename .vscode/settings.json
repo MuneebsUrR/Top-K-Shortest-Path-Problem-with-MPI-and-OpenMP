@@ -3,6 +3,8 @@
         "*.js": "javascriptreact",
         "iosfwd": "cpp",
         "random": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "unordered_set": "cpp",
+        "ostream": "cpp"
     }
 }

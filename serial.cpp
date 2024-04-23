@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
         // Generate random pairs only in the root process
         generate_random_pairs(random_selected_pairs);
         print_pairs(random_selected_pairs);
-        int N = count_numberof_nodes(random_selected_pairs);
+        int N = count_numberof_nodes();
         cout << "Nodes = " << N << endl;
         // Function Call
         // findKShortest(edges, N, M, K);
