@@ -13,6 +13,8 @@
 
 using namespace std;
 
+#define inf INT32_MAX
+
 // Function to find K shortest path lengths
 void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
 {
@@ -28,7 +30,7 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
     cout << "completed" << endl;
 
     // Vector to store distances
-    vector< vector<int> > dis(n + 1, vector<int>(k, 1000000));
+    vector< vector<int> > dis(n + 1, vector<int>(k, inf));
 
     // Initialization of priority queue
     priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
@@ -78,22 +80,22 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
 }
 
 void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int noOfNodes) {
-	srand(time(0));
+    srand(time(0));
 
-	for (int i = 0; i < noOfPairs; i++) {
-	    int randomNumber1 = rand() % noOfNodes;
-	    int randomNumber2 = rand() % noOfNodes;
-		random_selected_pairs[i][0] = randomNumber1;
-		random_selected_pairs[i][1] = randomNumber2;
-	}
+    for (int i = 0; i < noOfPairs; i++) {
+        int randomNumber1 = rand() % noOfNodes;
+        int randomNumber2 = rand() % noOfNodes;
+        random_selected_pairs[i][0] = randomNumber1;
+        random_selected_pairs[i][1] = randomNumber2;
+    }
 }
 
 
 void print_pairs(int random_selected_pairs[][2]){
-	//printing random pairs
-	for(int i =0 ;i<10;i++){
-		cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<endl;
-	}
+    //printing random pairs
+    for(int i =0 ;i<10;i++){
+        cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<endl;
+    }
 }
 
 
@@ -165,7 +167,7 @@ int main(int argc, char** argv) {
     const int noOfPairs = 10;
     int random_selected_pairs[noOfPairs][2];
 
-    
+
     // Generate random pairs only in the root process
     generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
     print_pairs(random_selected_pairs);
@@ -181,7 +183,7 @@ int main(int argc, char** argv) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Time taken for serial: %f seconds\n", cpu_time_used);
-    
+
 
     return 0;
 }
