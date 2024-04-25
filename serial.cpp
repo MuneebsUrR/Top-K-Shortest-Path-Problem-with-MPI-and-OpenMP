@@ -14,15 +14,15 @@ using namespace std;
 #define inf INT32_MAX
 
 // Function to find K shortest path lengths
-void findKShortest(vector<vector<pair<int, int> > > &g, int n, int m, int k)
+void findKShortest(vector<vector<pair<int, int> > > &edges, int n, int k)
 {
-    //print g
-    for (int i = 0; i < g.size(); i++)
+    //print edges
+    for (int i = 0; i < edges.size(); i++)
     {
         cout << i << ": ";
-        for (int j = 0; j < g[i].size(); j++)
+        for (int j = 0; j < edges[i].size(); j++)
         {
-            cout << g[i][j].first << " " << g[i][j].second << " | ";
+            cout << edges[i][j].first << " " << edges[i][j].second << " | ";
         }
         cout << endl;
     }
@@ -49,7 +49,7 @@ void findKShortest(vector<vector<pair<int, int> > > &g, int n, int m, int k)
         pq.pop();
         if (dis[u][k - 1] < d)
             continue;
-        vector<pair<int, int> > v = g[u];
+        vector<pair<int, int> > v = edges[u];
 
         // Traversing the adjacency list
         for (int i = 0; i < v.size(); i++)
@@ -139,9 +139,8 @@ int countUniqueNodes(const string &filename)
     return maxNode;
 }
 
-int completeEdgesVector(vector<vector<pair<int, int> > > &edges, const string &filename)
+void completeEdgesVector(vector<vector<pair<int, int> > > &edges, const string &filename)
 {
-    int count = 0;
     ifstream file(filename); // open the file
     if (file.is_open())
     {
@@ -152,13 +151,13 @@ int completeEdgesVector(vector<vector<pair<int, int> > > &edges, const string &f
             int node_from, node_to;
             if (iss >> node_from >> node_to)
             {
-                // cout << "Node from: " << node_from << " Node to: " << node_to << endl;
                 if (node_from == node_to)
                 {
                     continue;
                 }
-                edges[node_from].push_back(make_pair(node_to, 1)); // Assuming default weight is 1
-                count++;
+
+                // Assuming default weight is 1
+                edges[node_from].push_back(make_pair(node_to, 1));
             }
             else
             {
@@ -169,7 +168,6 @@ int completeEdgesVector(vector<vector<pair<int, int> > > &edges, const string &f
     }
 
     file.close();
-    return count;
 }
 
 int main(int argc, char **argv)
@@ -177,7 +175,7 @@ int main(int argc, char **argv)
     string filename = "euemail.txt";
     int uniqueNodeCount = countUniqueNodes(filename);
     vector<vector<pair<int, int> > > edges(uniqueNodeCount + 1);
-    int noOfEdges = completeEdgesVector(edges, filename);
+    completeEdgesVector(edges, filename);
     clock_t start, end;
     double cpu_time_used;
 
@@ -196,7 +194,7 @@ int main(int argc, char **argv)
     cout << "K = " << K << endl;
 
     start = clock();
-    findKShortest(edges, uniqueNodeCount, noOfEdges, K);
+    findKShortest(edges, uniqueNodeCount, K);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Time taken for serial: %f seconds\n", cpu_time_used);
