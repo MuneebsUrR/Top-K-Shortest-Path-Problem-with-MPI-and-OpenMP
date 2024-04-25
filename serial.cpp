@@ -8,20 +8,20 @@
 #include <sstream>
 #include <algorithm>
 #include <unordered_set>
-// #include <omp.h>
-// #include <mpi.h>
 
 using namespace std;
 
 #define inf INT32_MAX
 
 // Function to find K shortest path lengths
-void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
+void findKShortest(vector<vector<pair<int, int> > > &g, int n, int m, int k)
 {
     //print g
-    for(int i = 0; i < g.size(); i++){
+    for (int i = 0; i < g.size(); i++)
+    {
         cout << i << ": ";
-        for(int j = 0; j < g[i].size(); j++){
+        for (int j = 0; j < g[i].size(); j++)
+        {
             cout << g[i][j].first << " " << g[i][j].second << " | ";
         }
         cout << endl;
@@ -30,7 +30,7 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
     cout << "completed" << endl;
 
     // Vector to store distances
-    vector< vector<int> > dis(n + 1, vector<int>(k, inf));
+    vector<vector<int> > dis(n + 1, vector<int>(k, inf));
 
     // Initialization of priority queue
     priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
@@ -79,10 +79,12 @@ void findKShortest(vector<vector<pair<int, int> > > & g, int n, int m, int k)
     }
 }
 
-void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int noOfNodes) {
+void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int noOfNodes)
+{
     srand(time(0));
 
-    for (int i = 0; i < noOfPairs; i++) {
+    for (int i = 0; i < noOfPairs; i++)
+    {
         int randomNumber1 = rand() % noOfNodes;
         int randomNumber2 = rand() % noOfNodes;
         random_selected_pairs[i][0] = randomNumber1;
@@ -91,32 +93,41 @@ void generate_random_pairs(int random_selected_pairs[][2], int noOfPairs, int no
 }
 
 
-void print_pairs(int random_selected_pairs[][2]){
+void print_pairs(int random_selected_pairs[][2])
+{
     //printing random pairs
-    for(int i =0 ;i<10;i++){
-        cout<<random_selected_pairs[i][0]<<"-"<<random_selected_pairs[i][1]<<endl;
+    for (int i = 0; i < 10; i++)
+    {
+        cout << random_selected_pairs[i][0] << "-" << random_selected_pairs[i][1] << endl;
     }
 }
 
 
-int countUniqueNodes(const string& filename) {
+int countUniqueNodes(const string &filename)
+{
     ifstream file(filename); // open the file
     unordered_set<int> uniqueNodes;
     int maxNode = 0; // Initialize maxNode to 0
 
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         string line;
-        while (getline(file, line)) {
+        while (getline(file, line))
+        {
             istringstream iss(line);
             int node_from, node_to;
-            if (iss >> node_from >> node_to) {
-                if (node_from == node_to) {
+            if (iss >> node_from >> node_to)
+            {
+                if (node_from == node_to)
+                {
                     continue;
                 }
                 uniqueNodes.insert(node_from);
                 uniqueNodes.insert(node_to);
                 maxNode = max(maxNode, max(node_from, node_to)); // Update maxNode
-            } else {
+            }
+            else
+            {
                 cerr << "Parsing error" << endl;
                 break;
             }
@@ -128,22 +139,29 @@ int countUniqueNodes(const string& filename) {
     return maxNode;
 }
 
-int completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string& filename) {
+int completeEdgesVector(vector<vector<pair<int, int> > > &edges, const string &filename)
+{
     int count = 0;
     ifstream file(filename); // open the file
-    if (file.is_open()) {
+    if (file.is_open())
+    {
         string line;
-        while (getline(file, line)) {
+        while (getline(file, line))
+        {
             istringstream iss(line);
             int node_from, node_to;
-            if (iss >> node_from >> node_to) {
+            if (iss >> node_from >> node_to)
+            {
                 // cout << "Node from: " << node_from << " Node to: " << node_to << endl;
-                if (node_from == node_to) {
+                if (node_from == node_to)
+                {
                     continue;
                 }
                 edges[node_from].push_back(make_pair(node_to, 1)); // Assuming default weight is 1
                 count++;
-            } else {
+            }
+            else
+            {
                 cerr << "Parsing error" << endl;
                 break;
             }
@@ -154,14 +172,14 @@ int completeEdgesVector(vector<vector<pair<int, int> > > & edges, const string& 
     return count;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     string filename = "euemail.txt";
     int uniqueNodeCount = countUniqueNodes(filename);
     vector<vector<pair<int, int> > > edges(uniqueNodeCount + 1);
     int noOfEdges = completeEdgesVector(edges, filename);
     clock_t start, end;
     double cpu_time_used;
-
 
     const int K = 3;
     const int noOfPairs = 10;
@@ -173,7 +191,6 @@ int main(int argc, char** argv) {
     print_pairs(random_selected_pairs);
 
     cout << "Nodes = " << uniqueNodeCount << endl;
-
     cout << "uniqueNodeCount = " << uniqueNodeCount << endl;
     cout << "edges.size() = " << edges.size() << endl;
     cout << "K = " << K << endl;
@@ -183,7 +200,6 @@ int main(int argc, char** argv) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Time taken for serial: %f seconds\n", cpu_time_used);
-
 
     return 0;
 }
