@@ -14,28 +14,15 @@ using namespace std;
 #define inf INT32_MAX
 
 // Function to find K shortest path lengths
-void findKShortest(vector<vector<pair<int, int> > > &edges, int n, int k)
+void findKShortest(vector<vector<pair<int, int> > > &edges, int n, int k, int source)
 {
-    //print edges
-    for (int i = 0; i < edges.size(); i++)
-    {
-        cout << i << ": ";
-        for (int j = 0; j < edges[i].size(); j++)
-        {
-            cout << edges[i][j].first << " " << edges[i][j].second << " | ";
-        }
-        cout << endl;
-    }
-
-    cout << "completed" << endl;
-
     // Vector to store distances
     vector<vector<int> > dis(n + 1, vector<int>(k, inf));
 
     // Initialization of priority queue
     priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
-    pq.push(make_pair(0, 1));
-    dis[1][0] = 0;
+    pq.push(make_pair(0, source));
+    dis[source][0] = 0;
 
     // while pq has elements
     while (!pq.empty())
@@ -183,7 +170,6 @@ int main(int argc, char **argv)
     const int noOfPairs = 10;
     int random_selected_pairs[noOfPairs][2];
 
-
     // Generate random pairs only in the root process
     generate_random_pairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
     print_pairs(random_selected_pairs);
@@ -194,7 +180,10 @@ int main(int argc, char **argv)
     cout << "K = " << K << endl;
 
     start = clock();
-    findKShortest(edges, uniqueNodeCount, K);
+    for (int i = 0; i < noOfPairs; i++)
+    {
+        findKShortest(edges, uniqueNodeCount, K, random_selected_pairs[i][0]);
+    }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Time taken for serial: %f seconds\n", cpu_time_used);
