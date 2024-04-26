@@ -194,8 +194,8 @@ int main(int argc, char **argv)
     // Do not comment this line
     const int K = 3;
 
-    // string filename = "emails.txt";
-    // string filename = "emails2.txt"; // very sparse dataset
+    string filename = "emails.txt";
+    // string filename = "emails2.txt"; // very sparse dataset 
     // string filename = "doctors.txt";
     
     int maxNodeValue = getMaximumNodeValue(filename);
