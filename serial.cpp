@@ -193,38 +193,38 @@ int main(int argc, char **argv)
     // Do not comment this line
     const int K = 3;
 
-    // string filename = "euemail.txt";
-    // int uniqueNodeCount = getMaximumValueOfNode(filename);
-    // vector<vector<pair<int, int>>> edges(uniqueNodeCount + 1);
-    // setEdgesVector(edges, filename);
-    // clock_t start, end;
-    // double cpu_time_used;
+    string filename = "euemail.txt";
+    int uniqueNodeCount = getMaximumValueOfNode(filename);
+    vector<vector<pair<int, int>>> edges(uniqueNodeCount + 1);
+    setEdgesVector(edges, filename);
+    clock_t start, end;
+    double cpu_time_used;
 
-    // // Generate and print random pairs
-    // const int noOfPairs = 10;
-    // int random_selected_pairs[noOfPairs][2];
-    // generateRandomPairs(random_selected_pairs, noOfPairs, uniqueNodeCount);
-    // cout << endl;
+    // Generate and print random pairs
+    const int noOfPairs = 10;
+    int randomPairs[noOfPairs][2];
+    generateRandomPairs(randomPairs, noOfPairs, uniqueNodeCount);
+    cout << endl;
 
     // Small dataset for testing purposes
     // to run this make sure to comment out the above code and the code below the following code
     //
-    vector<vector<pair<int, int>>> edges(6);
-    edges[2].push_back(make_pair(3, 2));
-    edges[2].push_back(make_pair(4, 6));
-    edges[3].push_back(make_pair(2, 8));
-    edges[3].push_back(make_pair(4, 1));
-    findKShortest(edges, 4, K, 2, 3);
+    // vector<vector<pair<int, int>>> edges(6);
+    // edges[2].push_back(make_pair(3, 2));
+    // edges[2].push_back(make_pair(4, 6));
+    // edges[3].push_back(make_pair(2, 8));
+    // edges[3].push_back(make_pair(4, 1));
+    // findKShortest(edges, 4, K, 2, 3);
 
-    // start = clock();
-    // for (int i = 0; i < noOfPairs; i++)
-    // {
-    //     findKShortest(edges, uniqueNodeCount, K, 1);
-    // }
+    start = clock();
+    for (int i = 0; i < noOfPairs; i++)
+    {
+        findKShortest(edges, uniqueNodeCount, K, randomPairs[i][0], randomPairs[i][1]);
+    }
 
-    // end = clock();
-    // cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    // printf("Time taken for serial: %f seconds\n", cpu_time_used);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Time taken for serial: %f seconds\n", cpu_time_used);
 
     return 0;
 }
