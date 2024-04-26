@@ -194,20 +194,23 @@ int main(int argc, char **argv)
     // Do not comment this line
     const int K = 3;
 
-    // string filename = "euemail.txt";
-    // string filename = "enronemail.txt";
-    string filename = "emails.txt";
+    // string filename = "emails.txt";
+    // string filename = "emails2.txt"; // very sparse dataset
+    // string filename = "doctors.txt";
+    
     int maxNodeValue = getMaximumNodeValue(filename);
+    
     vector<vector<pair<int, int>>> edges(maxNodeValue + 1);
     setEdgesVector(edges, filename);
-    clock_t start, end;
-    double cpu_time_used;
-
+    
     // Generate and print random pairs
     const int noOfPairs = 10;
     int randomPairs[noOfPairs][2];
     generateRandomPairs(randomPairs, noOfPairs, maxNodeValue);
     cout << endl;
+
+    clock_t start, end;
+    double cpu_time_used;
 
     // Small dataset for testing purposes
     // to run this make sure to comment out the above code and the code below the following code
