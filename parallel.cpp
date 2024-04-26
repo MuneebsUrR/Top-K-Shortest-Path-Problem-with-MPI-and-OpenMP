@@ -43,12 +43,17 @@ void findKShortest(vector<vector<pair<int, int>>> &edges, int n, int k, int sour
     // Loop until priority queue is empty
     while (!pq.empty())
     {
-        // Storing the node value
-        int u = pq.top().second;
+        int u, d;
+        #pragma omp critical
+        {
+            // Storing the node value
+            u = pq.top().second;
 
-        // Storing the distance value
-        int d = pq.top().first;
-        pq.pop();
+            // Storing the distance value
+            d = pq.top().first;
+            pq.pop();
+        }
+
 
         if (dis[u][k - 1].distance < d) 
         {
@@ -58,6 +63,7 @@ void findKShortest(vector<vector<pair<int, int>>> &edges, int n, int k, int sour
         vector<pair<int, int>> v = edges[u];
 
         // Traversing the adjacency list
+        #pragma omp parallel for
         for (int i = 0; i < v.size(); i++)
         {
             int dest = v[i].first;
@@ -76,7 +82,10 @@ void findKShortest(vector<vector<pair<int, int>>> &edges, int n, int k, int sour
                 });
 
                 // Pushing elements to priority queue
-                pq.push(make_pair((d + cost), dest));
+                #pragma omp critical
+                {
+                    pq.push(make_pair((d + cost), dest));
+                }
             }
         }
     }
@@ -109,8 +118,9 @@ void generateRandomPairs(int randomSelectedPairs[][2], int noOfPairs, int noOfNo
 
         // Display generated pair
         cout << "Pair #" << i + 1 << ": \t" << r1 << " -> " << r2 << endl;
-
     }
+
+    cout << endl;
 }
 
 // Returns the highest value of a source or destintation node from file
@@ -214,38 +224,34 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-
     // Generate and print random pairs
     const int noOfPairs = 10;
     int randomPairs[noOfPairs][2];
-    if (rank == 0) {
+    if (rank == 0)
+    {
         generateRandomPairs(randomPairs, noOfPairs, maxNodeValue);
-        cout << endl;
     }
 
     int rows_per_process = 2;
     int received_pairs[rows_per_process][2]; // buffer to receive scattered pairs
+    
+    start = clock();
     MPI_Scatter(randomPairs, rows_per_process * 2, MPI_INT, received_pairs, rows_per_process * 2, MPI_INT, 0, MPI_COMM_WORLD);
 
-    // Small dataset for testing purposes
-    // to run this make sure to comment out the above code and the code below the following code
-    //
-    // vector<vector<pair<int, int>>> edges(6);
-    // edges[2].push_back(make_pair(3, 2));
-    // edges[2].push_back(make_pair(4, 6));
-    // edges[3].push_back(make_pair(2, 8));
-    // edges[3].push_back(make_pair(4, 1));
-    // findKShortest(edges, 4, K, 2, 3);
-
-    start = clock();
     for (int i = 0; i < rows_per_process; i++)
     {
         findKShortest(edges, maxNodeValue, K, received_pairs[i][0], received_pairs[i][1]);
     }
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Time taken for serial: %f seconds\n", cpu_time_used);
 
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    if (rank == 0)
+    {
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        printf("Time taken for parallel: %f seconds\n", cpu_time_used);
+    }
+    
     MPI_Finalize();
 
     return 0;

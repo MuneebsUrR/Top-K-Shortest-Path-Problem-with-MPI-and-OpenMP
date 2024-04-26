@@ -107,8 +107,9 @@ void generateRandomPairs(int randomSelectedPairs[][2], int noOfPairs, int noOfNo
 
         // Display generated pair
         cout << "Pair #" << i + 1 << ": \t" << r1 << " -> " << r2 << endl;
-
     }
+
+    cout << endl;
 }
 
 // Returns the highest value of a source or destintation node from file
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
     const int noOfPairs = 10;
     int randomPairs[noOfPairs][2];
     generateRandomPairs(randomPairs, noOfPairs, maxNodeValue);
-    cout << endl;
+
 
     clock_t start, end;
     double cpu_time_used;
