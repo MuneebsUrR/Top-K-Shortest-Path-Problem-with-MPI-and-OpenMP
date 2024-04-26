@@ -111,7 +111,7 @@ void generateRandomPairs(int randomSelectedPairs[][2], int noOfPairs, int noOfNo
 }
 
 // Returns the highest value of a source or destintation node from file
-int getMaximumValueOfNode(const string &filename)
+int getMaximumNodeValue(const string &filename)
 {
     int maxNode = 0;
 
@@ -194,8 +194,8 @@ int main(int argc, char **argv)
     const int K = 3;
 
     string filename = "euemail.txt";
-    int uniqueNodeCount = getMaximumValueOfNode(filename);
-    vector<vector<pair<int, int>>> edges(uniqueNodeCount + 1);
+    int maxNodeValue = getMaximumNodeValue(filename);
+    vector<vector<pair<int, int>>> edges(maxNodeValue + 1);
     setEdgesVector(edges, filename);
     clock_t start, end;
     double cpu_time_used;
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
     // Generate and print random pairs
     const int noOfPairs = 10;
     int randomPairs[noOfPairs][2];
-    generateRandomPairs(randomPairs, noOfPairs, uniqueNodeCount);
+    generateRandomPairs(randomPairs, noOfPairs, maxNodeValue);
     cout << endl;
 
     // Small dataset for testing purposes
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
     start = clock();
     for (int i = 0; i < noOfPairs; i++)
     {
-        findKShortest(edges, uniqueNodeCount, K, randomPairs[i][0], randomPairs[i][1]);
+        findKShortest(edges, maxNodeValue, K, randomPairs[i][0], randomPairs[i][1]);
     }
 
     end = clock();
