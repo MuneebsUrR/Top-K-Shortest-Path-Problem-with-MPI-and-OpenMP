@@ -8,7 +8,19 @@ Group Members:
 
 ## Compilation and Execution Instructions
 
+### Serial
+
+The serial program will be compiled and executed using the following commands:
+
+```bash
+g++ -std=c++11 serial.cpp -o serial && ./serial
+```
+
+### Parallel
+
 The parallel program will be compiled and executed using 5 MPI processes using the following commands:
 
-1. mpic++ -o parallel parallel.cpp
-2. mpirun -np 5 ./parallel        
+```bash
+mpic++ -o parallel parallel.cpp
+mpirun -np 5 ./parallel
+```
