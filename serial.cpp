@@ -26,7 +26,7 @@ struct Node
 // Function to find K shortest path lengths
 void findKShortest(vector<vector<pair<int, int>>> &edges, int n, int k, int source, int destination)
 {
-    cout << "Searching a path from " << source << " to " << destination << " with K = " << k << "\n\n";
+    cout << "Searching a path from " << source << " to " << destination << " with K = " << k << endl;
 
     vector<vector<Node>> dis(n + 1, vector<Node>(k, Node(inf, vector<int>())));
 
@@ -89,7 +89,8 @@ void findKShortest(vector<vector<pair<int, int>>> &edges, int n, int k, int sour
         }
         cout << " Distance: " << dis[destination][i].distance << endl;
     }
-    cout << endl;
+    
+    cout << endl << endl;
 }
 
 void generateRandomPairs(int randomSelectedPairs[][2], int noOfPairs, int noOfNodes)
@@ -156,13 +157,13 @@ void setEdgesVector(vector<vector<pair<int, int>>> &edges, const string &filenam
         while (getline(file, line))
         {
             istringstream iss(line);
-            int node_from, node_to;
+            int node_from, node_to, weight;
 
             // Parse the line
             // will not work if the line contains source destination weight
             // for weight to work, append '>> weight' to the iss
             //
-            if (iss >> node_from >> node_to)
+            if (iss >> node_from >> node_to >> weight)
             {
                 // Skip self loops
                 if (node_from == node_to)
@@ -171,7 +172,7 @@ void setEdgesVector(vector<vector<pair<int, int>>> &edges, const string &filenam
                 }
 
                 // An assumption is made that the weight is 1
-                edges[node_from].push_back(make_pair(node_to, 1));
+                edges[node_from].push_back(make_pair(node_to, weight));
             }
             else
             {
@@ -193,7 +194,9 @@ int main(int argc, char **argv)
     // Do not comment this line
     const int K = 3;
 
-    string filename = "euemail.txt";
+    // string filename = "euemail.txt";
+    // string filename = "enronemail.txt";
+    string filename = "emails.txt";
     int maxNodeValue = getMaximumNodeValue(filename);
     vector<vector<pair<int, int>>> edges(maxNodeValue + 1);
     setEdgesVector(edges, filename);
